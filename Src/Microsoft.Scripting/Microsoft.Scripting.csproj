@@ -4,6 +4,7 @@
     <TargetFrameworks>net462</TargetFrameworks>
     <BaseAddress>857735168</BaseAddress>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AssemblyName>pyRevitLabs.Microsoft.Scripting</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(IsFullFramework)' == 'true' ">

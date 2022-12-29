@@ -6,6 +6,7 @@
     <BaseAddress>859832320</BaseAddress>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>pyRevitLabs.Microsoft.Dynamic</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
