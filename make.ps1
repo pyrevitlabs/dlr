@@ -4,7 +4,7 @@ Param(
     [Parameter(Position=1)]
     [String] $target = "release",
     [String] $configuration = "Release",
-    [String[]] $frameworks=@('net45','netcoreapp2.1','netcoreapp3.1'),
+    [String[]] $frameworks=@('net48',,'net6.0'),
     [String] $platform = "x64",
     [switch] $runIgnored
 )
@@ -13,36 +13,6 @@ Param(
 [bool] $global:isUnix = [System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix
 
 $_BASEDIR = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-
-if(!$global:isUnix) {
-    $_VSWHERE = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft Visual Studio\Installer\vswhere.exe')
-    $_VSINSTPATH = ''
-
-    if([System.IO.File]::Exists($_VSWHERE)) {
-        $_VSINSTPATH = & "$_VSWHERE" -latest -prerelease -requires Microsoft.Component.MSBuild -property installationPath
-    } else {
-        Write-Error "Visual Studio 2019 16.3.0 or later is required"
-        Exit 1
-    }
-
-    if(-not [System.IO.Directory]::Exists($_VSINSTPATH)) {
-        Write-Error "Could not determine installation path to Visual Studio"
-        Exit 1
-    }
-
-    if([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\MSBuild.exe'))) {
-        $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\Current\Bin\')
-        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
-            $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
-        }
-    }
-    elseif([System.IO.File]::Exists([System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\MSBuild.exe'))) {
-        $_MSBUILDPATH = [System.IO.Path]::Combine($_VSINSTPATH, 'MSBuild\15.0\Bin\')
-        if ($env:PATH -split ';' -notcontains $_MSBUILDPATH) {
-            $env:PATH = [String]::Join(';', $env:PATH, $_MSBUILDPATH)
-        }
-    }
-}
 
 $_defaultFrameworkSettings = @{
     "runner" = "dotnet";
@@ -68,7 +38,7 @@ function GenerateRunSettings([String] $folder, [String] $framework, [String] $pl
 
 #   <RunSettings>
 #     <TestRunParameters>
-#       <Parameter name="FRAMEWORK" value="net45" />
+#       <Parameter name="FRAMEWORK" value="net462" />
 #     </TestRunParameters>
 #   </RunSettings>
 

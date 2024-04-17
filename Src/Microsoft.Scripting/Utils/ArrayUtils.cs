@@ -97,7 +97,9 @@ namespace Microsoft.Scripting.Utils {
 
         public static T[] ShiftRight<T>(T[] array, int count) {
             ContractUtils.RequiresNotNull(array, nameof(array));
+#pragma warning disable CA1512
             if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+#pragma warning restore CA1512
 
             T[] result = new T[array.Length + count];
             Array.Copy(array, 0, result, count, array.Length);
@@ -262,8 +264,8 @@ namespace Microsoft.Scripting.Utils {
         }
 
         /// <summary>
-        /// Converts a generic ICollection of T into an array of T.  
-        /// 
+        /// Converts a generic ICollection of T into an array of T.
+        ///
         /// If the collection is already an  array of T the original collection is returned.
         /// </summary>
         public static T[] ToArray<T>(ICollection<T> list) {

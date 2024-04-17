@@ -3,19 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 #if FEATURE_COM
-#pragma warning disable 618
+
+#pragma warning disable CA1416 // Validate platform compatibility
 
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using Microsoft.Scripting.Utils;
-using System.Reflection;
+
 using Microsoft.Scripting.Generation;
-using System.Reflection.Emit;
+using Microsoft.Scripting.Utils;
 
 namespace Microsoft.Scripting.ComInterop {
 
@@ -30,7 +32,7 @@ namespace Microsoft.Scripting.ComInterop {
 #if DEBUG
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2207:InitializeValueTypeStaticFieldsInline")]
         static Variant() {
-            // Variant size is the size of 4 pointers (16 bytes) on a 32-bit processor, 
+            // Variant size is the size of 4 pointers (16 bytes) on a 32-bit processor,
             // and 3 pointers (24 bytes) on a 64-bit processor.
             int intPtrSize = Marshal.SizeOf(typeof(IntPtr));
             int variantSize = Marshal.SizeOf(typeof(Variant));
@@ -216,7 +218,7 @@ namespace Microsoft.Scripting.ComInterop {
             // to safe ourselves the cost of interop transition.
             // ByRef indicates the memory is not owned by the VARIANT itself while
             // primitive types do not have any resources to free up.
-            // Hence, only safearrays, BSTRs, interfaces and user types are 
+            // Hence, only safearrays, BSTRs, interfaces and user types are
             // handled differently.
             VarEnum vt = VariantType;
             if ((vt & VarEnum.VT_BYREF) != 0) {
@@ -701,7 +703,7 @@ namespace Microsoft.Scripting.ComInterop {
         /// Helper method for generated code
         /// </summary>
         private static IntPtr GetIDispatchForObject(object value) {
-#if !NETCOREAPP
+#if NETFRAMEWORK || NET
             return Marshal.GetIDispatchForObject(value);
 #else
             return Marshal.GetComInterfaceForObject<object, IDispatch>(value);
@@ -895,7 +897,9 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case VarEnum.VT_ERROR:
+#pragma warning disable CS0618 // Type or member is obsolete
                     *(int*)_typeUnion._unionTypes._byref = ((ErrorWrapper)value).ErrorCode;
+#pragma warning restore CS0618 // Type or member is obsolete
                     break;
 
                 case VarEnum.VT_I8:
@@ -923,11 +927,7 @@ namespace Microsoft.Scripting.ComInterop {
                     break;
 
                 case VarEnum.VT_DISPATCH:
-#if !NETCOREAPP
-                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIDispatchForObject(value);
-#else
-                    *(IntPtr*)_typeUnion._unionTypes._byref = Marshal.GetIUnknownForObject(value);
-#endif
+                    *(IntPtr*)_typeUnion._unionTypes._byref = GetIDispatchForObject(value);
                     break;
 
                 case VarEnum.VT_BSTR:

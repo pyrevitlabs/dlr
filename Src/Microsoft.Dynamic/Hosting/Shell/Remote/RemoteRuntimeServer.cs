@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_REMOTING && FEATURE_FULL_CONSOLE
+#if FEATURE_REMOTING
 
 using System;
 using System.Diagnostics;
@@ -18,7 +18,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
     /// </summary>
     public static class RemoteRuntimeServer {
         internal const string CommandDispatcherUri = "CommandDispatcherUri";
-        internal const string RemoteRuntimeArg = "-X:RemoteRuntimeChannel";
+        internal const string RemoteRuntimeArg = "RemoteRuntimeChannel";
 
         private static TimeSpan GetSevenDays() {
             return new TimeSpan(7, 0, 0, 0); // days,hours,mins,secs 

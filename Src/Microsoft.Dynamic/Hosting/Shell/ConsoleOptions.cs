@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_FULL_CONSOLE
-
 using System;
 using Microsoft.Scripting.Utils;
 
@@ -22,6 +20,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         private bool _handleExceptions = true;
         private bool _tabCompletion;
         private bool _colorfulConsole;
+        private bool? _darkConsole;
         private bool _printUsage;
         private bool _isMta;
 #if FEATURE_REMOTING
@@ -46,6 +45,15 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public bool ColorfulConsole {
             get { return _colorfulConsole; }
             set { _colorfulConsole = value; }
+        }
+
+        /// <summary>
+        /// If ColorfulConsole is used, indicate preference for using a color scheme for a console with a dark background.
+        /// Value <c>null</c> means no preference (use autodetect if possible).
+        /// </summary>
+        public bool? DarkConsole {
+            get { return _darkConsole; }
+            set { _darkConsole = value; }
         }
 
         public bool PrintUsage {
@@ -127,6 +135,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             _handleExceptions = options._handleExceptions;
             _tabCompletion = options._tabCompletion;
             _colorfulConsole = options._colorfulConsole;
+            _darkConsole = options._darkConsole;
             _printUsage = options._printUsage;
             _isMta = options._isMta;
 #if FEATURE_REMOTING
@@ -135,5 +144,3 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
     }
 }
-
-#endif

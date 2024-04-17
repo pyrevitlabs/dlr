@@ -4,6 +4,8 @@
 
 #if FEATURE_COM
 
+#pragma warning disable CA1416 // Validate platform compatibility
+
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -215,7 +217,7 @@ namespace Microsoft.Scripting.ComInterop {
             return new DispCallable(dispatch, method.Name, method.DispId);
         }
         internal static MethodInfo GetGetIDispatchForObjectMethod() {
-#if !NETCOREAPP
+#if NETFRAMEWORK || NET
             return typeof(Marshal).GetMethod(nameof(Marshal.GetIDispatchForObject));
 #else
             // GetIDispatchForObject always throws a PNSE in .NET Core, so we work around it by using GetComInterfaceForObject with our IDispatch type.
@@ -499,10 +501,12 @@ namespace Microsoft.Scripting.ComInterop {
                         var attributes = new[] {
                             new CustomAttributeBuilder(typeof(UnverifiableCodeAttribute).GetConstructor(ReflectionUtils.EmptyTypes), EmptyArray<object>.Instance),
                             //PermissionSet(SecurityAction.Demand, Unrestricted = true)
+#if !NETCOREAPP
                             new CustomAttributeBuilder(typeof(PermissionSetAttribute).GetConstructor(new Type[]{typeof(SecurityAction)}),
                                 new object[]{SecurityAction.Demand},
                                 new PropertyInfo[]{typeof(PermissionSetAttribute).GetProperty(nameof(PermissionSetAttribute.Unrestricted))},
                                 new object[] {true})
+#endif
                         };
 
                         string name = typeof(VariantArray).Namespace + ".DynamicAssembly";

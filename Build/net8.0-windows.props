@@ -7,19 +7,18 @@
   <PropertyGroup>
     <Features>$(Features);FEATURE_APARTMENTSTATE</Features>
     <Features>$(Features);FEATURE_APPLICATIONEXCEPTION</Features>
-    <Features>$(Features);FEATURE_ASSEMBLY_CODEBASE</Features>
-    <Features>$(Features);FEATURE_ASSEMBLY_GETFORWARDEDTYPES</Features>
     <Features>$(Features);FEATURE_ASSEMBLY_LOCATION</Features>
     <Features>$(Features);FEATURE_ASSEMBLY_RESOLVE</Features>
     <Features>$(Features);FEATURE_ASSEMBLYBUILDER_DEFINEDYNAMICASSEMBLY</Features>
     <Features>$(Features);FEATURE_BASIC_CONSOLE</Features>
     <Features>$(Features);FEATURE_CODEDOM</Features>
-    <Features>$(Features);FEATURE_COM</Features>
     <Features>$(Features);FEATURE_CONFIGURATION</Features>
+    <Features>$(Features);FEATURE_CTYPES</Features>
     <Features>$(Features);FEATURE_CUSTOM_TYPE_DESCRIPTOR</Features>
     <Features>$(Features);FEATURE_DBNULL</Features>
     <Features>$(Features);FEATURE_DRIVENOTFOUNDEXCEPTION</Features>
     <Features>$(Features);FEATURE_DYNAMIC_EXPRESSION_VISITOR</Features>
+    <Features>$(Features);FEATURE_ENCODING</Features>
     <Features>$(Features);FEATURE_EXCEPTION_STATE</Features>
     <Features>$(Features);FEATURE_FILESYSTEM</Features>
     <Features>$(Features);FEATURE_FULL_CONSOLE</Features>
@@ -36,6 +35,7 @@
     <Features>$(Features);FEATURE_PROCESS</Features>
     <Features>$(Features);FEATURE_REFEMIT</Features>
     <Features>$(Features);FEATURE_REGISTRY</Features>
+    <Features>$(Features);FEATURE_RUNTIMEINFORMATION</Features>
     <Features>$(Features);FEATURE_SECURITY_RULES</Features>
     <Features>$(Features);FEATURE_SERIALIZATION</Features>
     <Features>$(Features);FEATURE_SORTKEY</Features>

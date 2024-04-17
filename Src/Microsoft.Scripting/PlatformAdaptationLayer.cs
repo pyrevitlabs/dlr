@@ -48,22 +48,6 @@ namespace Microsoft.Scripting {
 
         #region Assembly Loading
 
-#if NETCOREAPP2_1
-        static PlatformAdaptationLayer() {
-            // https://github.com/dotnet/coreclr/issues/11498
-            // attempt to resolve dependencies in the requesting directory
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-                if (args.RequestingAssembly == null) return null;
-                var path = Path.Combine(Path.GetDirectoryName(args.RequestingAssembly.Location), new AssemblyName(args.Name).Name + ".dll");
-                if (File.Exists(path)) {
-                    try { return Assembly.LoadFrom(path); }
-                    catch { }
-                }
-                return null;
-            };
-        }
-#endif
-
         public virtual Assembly LoadAssembly(string name) {
             return Assembly.Load(name);
         }
@@ -176,6 +160,10 @@ namespace Microsoft.Scripting {
 
         public virtual string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories) {
 #if FEATURE_FILESYSTEM
+            // workaround for bug in .NET Framework 4.6.2 - https://github.com/IronLanguages/ironpython3/pull/1601
+            if (path == ".") {
+                path += Path.DirectorySeparatorChar;
+            }
             if (includeFiles && includeDirectories) {
                 return Directory.GetFileSystemEntries(path, searchPattern);
             }
@@ -236,7 +224,7 @@ namespace Microsoft.Scripting {
                 return Path.IsPathRooted(path);
             }
             var root = Path.GetPathRoot(path);
-            return root.EndsWith(@":\") || root.EndsWith(@":/");
+            return root.EndsWith(@":\", StringComparison.Ordinal) || root.EndsWith(@":/", StringComparison.Ordinal);
 #else
             throw new NotImplementedException();
 #endif

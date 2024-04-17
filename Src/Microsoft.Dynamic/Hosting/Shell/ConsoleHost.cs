@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_FULL_CONSOLE
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -121,17 +119,17 @@ namespace Microsoft.Scripting.Hosting.Shell {
             ContractUtils.RequiresNotNull(options, nameof(options));
 
             if (options.TabCompletion) {
-                return CreateSuperConsole(commandLine, options.ColorfulConsole);
+                return CreateSuperConsole(commandLine, options);
             }
 
-            return new BasicConsole(options.ColorfulConsole);
+            return new BasicConsole(options);
         }
 
         // The advanced console functions are in a special non-inlined function so that 
         // dependencies are pulled in only if necessary.
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        private static IConsole CreateSuperConsole(CommandLine commandLine, bool isColorful) {
-            return new SuperConsole(commandLine, isColorful);
+        private static IConsole CreateSuperConsole(CommandLine commandLine, ConsoleOptions options) {
+            return new SuperConsole(commandLine, options);
         }
 
         #endregion
@@ -249,7 +247,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return sb.ToString();
         }
 
-        public void PrintLanguageHelp(StringBuilder output) {
+        public virtual void PrintLanguageHelp(StringBuilder output) {
             ContractUtils.RequiresNotNull(output, nameof(output));
 
             CreateOptionsParser().GetHelp(out string commandLine, out string[,] options, out string[,] environmentVariables, out string comments);
@@ -288,7 +286,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_APARTMENTSTATE
             if (_consoleOptions.IsMta) {
                 Thread thread = new Thread(ExecuteInternal);
+#pragma warning disable CA1416 // Validate platform compatibility
                 thread.SetApartmentState(ApartmentState.MTA);
+#pragma warning restore CA1416 // Validate platform compatibility
                 thread.Start();
                 thread.Join();
                 return;
@@ -300,7 +300,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         protected virtual void ExecuteInternal() {
             Debug.Assert(_engine != null);
 
-            if (_consoleOptions.PrintVersion){
+            if (_consoleOptions.PrintVersion) {
                 PrintVersion();
             }
 
@@ -409,7 +409,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             return exitCodeOverride.Value;
         }
 
-        private void PrintUsage()
+        protected virtual void PrintUsage()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Usage: {0}.exe ", ExeName);
@@ -417,7 +417,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
             Console.Write(sb.ToString());
         }
 
-        protected  void PrintVersion() {
+        protected virtual void PrintVersion() {
             Console.WriteLine("{0} {1} on {2}", Engine.Setup.DisplayName, Engine.LanguageVersion, GetRuntime());
         }
 
@@ -447,5 +447,3 @@ namespace Microsoft.Scripting.Hosting.Shell {
         }
     }
 }
-
-#endif

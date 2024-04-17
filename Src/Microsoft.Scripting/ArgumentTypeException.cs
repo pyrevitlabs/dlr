@@ -21,6 +21,7 @@ namespace Microsoft.Scripting {
         }
 
 #if FEATURE_SERIALIZATION
+        [Obsolete("Obsolete")]
         protected ArgumentTypeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 #endif
     }

@@ -31,7 +31,7 @@ The original DLR site is at [CodePlex](http://dlr.codeplex.com). The DLR was par
 
 Build
 -----
-You will need to have Visual Studio 2019 16.4.0 or later installed on your machine.
+You will need to have Visual Studio 2019 16.8.0 or later installed on your machine.
 
 On Windows machines, start a Visual Studio command prompt and type:
 
@@ -42,4 +42,4 @@ On Unix machines, make sure Mono is installed and in the PATH, and type:
     $ make
 
 Since the main development is on Windows, Mono bugs may inadvertantly be introduced
-- please report them!
+&mdash; please report them!

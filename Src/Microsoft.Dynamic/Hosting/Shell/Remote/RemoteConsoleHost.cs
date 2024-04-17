@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_REMOTING && FEATURE_FULL_CONSOLE
+#if FEATURE_REMOTING
 
 using System;
 using System.Diagnostics;
@@ -39,7 +39,7 @@ namespace Microsoft.Scripting.Hosting.Shell.Remote {
 
         private ProcessStartInfo GetProcessStartInfo() {
             ProcessStartInfo processInfo = new ProcessStartInfo();
-            processInfo.Arguments = RemoteRuntimeServer.RemoteRuntimeArg + " " + _channelName;
+            processInfo.Arguments = "-X:" + RemoteRuntimeServer.RemoteRuntimeArg + " " + _channelName;
             processInfo.CreateNoWindow = true;
 
             // Set UseShellExecute to false to enable redirection.

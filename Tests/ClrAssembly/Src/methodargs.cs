@@ -1,17 +1,6 @@
-/* ****************************************************************************
- *
- * Copyright (c) Microsoft Corporation. 
- *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * ironpy@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
- * by the terms of the Apache License, Version 2.0.
- *
- * You must not remove this notice, or any other, from this software.
- *
- *
- * ***************************************************************************/
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 //TODO - Parts of this file should NOT be under ClrAssembly as it has dependencies on the DLR!
 
@@ -30,7 +19,9 @@ namespace Merlin.Testing.Call {
         public void M200(int arg) { Flag.Set(arg); }
         public void M201([DefaultParameterValue(20)] int arg) { Flag.Set(arg); }
         public void M202(params int[] arg) { Flag.Set(arg.Length); }
-        public void M203([ParamDictionaryAttribute] IDictionary<object, object> arg) { Flag.Set(arg.Count); }
+        public void M203([ParamDictionary] IDictionary<object, object> arg) { Flag.Set(arg.Count); }
+        public void M204(params object[] arg) { Flag.Set(arg.Length); }
+        public void M205([ParamDictionary] IDictionary<string, int> arg) { Flag.Set(arg.Count); }
 
         // optional (get missing value)
         // - check the value actually passed in
@@ -46,11 +37,11 @@ namespace Merlin.Testing.Call {
         // two parameters
         public void M300(int x, int y) { }
         public void M350(int x, params int[] y) { }
-        public void M351(int x, [ParamDictionary] IDictionary<object, object> arg) { Flag<object>.Set(arg); }
-        public void M352([ParamDictionary] IDictionary<object, object> arg, params int[] x) { Flag<object>.Set(arg); }
+        public void M351(int x, [ParamDictionary] IDictionary<object, object> y) { Flag<object>.Set(y); }
+        public void M352([ParamDictionary] IDictionary<object, object> x, params object[] y) { Flag<object>.Set(x); }
 
         public void M310(int x, [DefaultParameterValue(30)]int y) { Flag.Set(x + y); }
-        public void M320([DefaultParameterValue(40)] int y, int x) { Flag.Set(x + y); }
+        public void M320([DefaultParameterValue(40)] int x, int y) { Flag.Set(x + y); }
         public void M330([DefaultParameterValue(50)] int x, [DefaultParameterValue(60)] int y) { Flag.Set(x + y); }
 
         public void M410(int x, [Optional]int y) { }
@@ -102,7 +93,7 @@ namespace Merlin.Testing.Call {
         public void M302(ref int arg1, int arg2, out int arg3) { arg1 = arg3 = 10; }
         public void M303(out int arg1, ref int arg2, int arg3) { arg1 = arg2 = 10; }
 
-        // mixed 
+        // mixed
         public void M400(ref int arg1, params int[] arg2) { arg1 = 10; }
         public void M401(out int arg1, params int[] arg2) { arg1 = 10; }
 
@@ -123,7 +114,7 @@ namespace Merlin.Testing.Call {
     }
 
     // Constructor
-    // 1 argument 
+    // 1 argument
     public class Ctor100 {
         public Ctor100(int arg) { }
     }
@@ -292,7 +283,7 @@ namespace Merlin.Testing.Call {
 
 #pragma warning disable 649
         private int _readonlyProperty;
-#pragma warning restore 
+#pragma warning restore
 
         public int ReadOnlyProperty {
             get { return _readonlyProperty; }

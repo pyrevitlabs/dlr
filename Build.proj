@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Mono Condition="'$(OS)' != 'Windows_NT'">true</Mono>
 
     <RootDir>$(MSBuildThisFileDirectory)</RootDir>
     <Solution>$(RootDir)\Dlr.sln</Solution>
@@ -31,8 +30,9 @@
       Configuration=$(Configuration);
       BinDir=$(BinDir);
       StageDir=$(StageDir);
+      PackageDir=$(PackageDir);
+      PackageVersion=$(PackageVersion);
       BuildSysDir=$(BuildSysDir);
-      Mono=$(Mono)
     </BuildProperties>
   </PropertyGroup>
 
@@ -75,7 +75,7 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
     <ItemGroup>
-      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.Scripting.*;$(BinDir)\$(Configuration)\**\Microsoft.Dynamic.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.Scripting.*;$(BinDir)\$(Configuration)\**\pyRevitLabs.Microsoft.Dynamic.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*" />
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
@@ -85,11 +85,6 @@
   <Target Name="MakePackageDir">
     <MakeDir Directories="$(PackageDir)" Condition="!Exists('$(PackageDir)')" />
   </Target>
-
-  <PropertyGroup>
-    <NuGet>$(UtilDir)\NuGet\nuget.exe</NuGet>
-    <NuGet Condition=" '$(Mono)' != '' ">mono $(NuGet)</NuGet>
-  </PropertyGroup>
 
   <ItemGroup>
     <Package Include="DynamicLanguageRuntime">
@@ -105,13 +100,15 @@
   <Target Name="NuGetPackage" DependsOnTargets="Stage;MakePackageDir"
           Inputs="@(NuGetPackageInputs);@(StageOutputs)"
           Outputs="@(NuGetPackageOutputs)">
-    <Exec Command="$(NuGet) pack -Version $(PackageVersion) &quot;%(Package.NuSpecDir)/%(Package.Identity).nuspec&quot; -BasePath &quot;$(StageDir)&quot; -OutputDirectory &quot;$(PackageDir)&quot; -Symbols -SymbolPackageFormat snupkg" />
+    <MSBuild Projects="%(Package.NuSpecDir)\NuGet.Packaging.csproj" Targets="Restore" />
+    <MSBuild Projects="%(Package.NuSpecDir)\NuGet.Packaging.csproj" Targets="Pack" Properties="$(BuildProperties);NuspecFile=%(Package.Identity).nuspec" />
   </Target>
 
   <Target Name="ZipPackage" DependsOnTargets="Stage;MakePackageDir"
           Outputs="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip">
     <ItemGroup>
-      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE" />
+      <ZipFiles Include="$(StageDir)\**\*.dll;$(StageDir)\**\*.xml;$(StageDir)\README.md;$(StageDir)\LICENSE"
+                Exclude="$(StageDir)\netcoreapp3.1\*;$(StageDir)\net7.0*\*;$(StageDir)\net8.0*\*" />
     </ItemGroup>
     <Message Text="$(ZipFiles)" />
     <Zip Files="@(ZipFiles)" ZipFileName="$(PackageDir)\DynamicLanguageRuntime.$(PackageVersion).zip" WorkingDirectory="$(StageDir)"/>

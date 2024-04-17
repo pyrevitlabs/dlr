@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_FULL_CONSOLE
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +14,8 @@ namespace Microsoft.Scripting.Utils {
     /// This class wraps the standard input stream with a buffer that ensures that enough data are read from the underlying stream.
     /// </summary>
     public sealed class ConsoleInputStream : Stream {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly ConsoleInputStream Instance = new ConsoleInputStream();
-        
+
         // we use 0x1000 to be safe (MSVCRT uses this value for stdin stream buffer).
         private const int MinimalBufferSize = 0x1000; 
 
@@ -27,9 +24,13 @@ namespace Microsoft.Scripting.Utils {
         private readonly byte[] _buffer = new byte[MinimalBufferSize];
         private int _bufferPos;
         private int _bufferSize;
-        
+
         private ConsoleInputStream() {
-            _input = Console.OpenStandardInput();
+            try {
+                _input = Console.OpenStandardInput();
+            } catch (PlatformNotSupportedException) {
+                _input = Stream.Null;
+            }
         }
 
         public override bool CanRead {
@@ -107,4 +108,3 @@ namespace Microsoft.Scripting.Utils {
         #endregion
     }
 }
-#endif

@@ -8,10 +8,10 @@ using System;
 namespace Microsoft.Scripting {
 
     /// <summary>
-    /// This class holds onto internal debugging options used in this assembly. 
+    /// This class holds onto internal debugging options used in this assembly.
     /// These options can be set via environment variables DLR_{option-name}.
     /// Boolean options map "true" to true and other values to false.
-    /// 
+    ///
     /// These options are for internal debugging only, and should not be
     /// exposed through any public APIs.
     /// </summary>
@@ -19,7 +19,7 @@ namespace Microsoft.Scripting {
 
         private static bool ReadOption(string name) {
             string envVar = ReadString(name);
-            return envVar != null && envVar.ToLowerInvariant() == "true";
+            return "true".Equals(envVar, StringComparison.OrdinalIgnoreCase);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "name")]

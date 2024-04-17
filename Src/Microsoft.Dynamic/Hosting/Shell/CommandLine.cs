@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if FEATURE_FULL_CONSOLE
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -102,7 +100,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
 #if FEATURE_EXCEPTION_STATE
             } catch (System.Threading.ThreadAbortException tae) {
                 if (tae.ExceptionState is KeyboardInterruptException) {
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
                     Thread.ResetAbort();
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                     _exitCode = -1;
                 } else {
                     throw;
@@ -282,7 +282,9 @@ namespace Microsoft.Scripting.Hosting.Shell {
             } catch (ThreadAbortException tae) {
                 if (tae.ExceptionState is KeyboardInterruptException pki) {
                     UnhandledException(tae);
+#pragma warning disable SYSLIB0006 // Type or member is obsolete
                     Thread.ResetAbort();
+#pragma warning restore SYSLIB0006 // Type or member is obsolete
                 } else {
                     throw;
                 }
@@ -422,7 +424,7 @@ namespace Microsoft.Scripting.Hosting.Shell {
         public virtual IList<string> GetGlobals(string name) {
             List<string> res = new List<string>();
             foreach (string scopeName in _scope.GetVariableNames()) {
-                if (scopeName.StartsWith(name)) {
+                if (scopeName.StartsWith(name, StringComparison.Ordinal)) {
                     res.Add(scopeName);
                 }
             }
@@ -440,4 +442,3 @@ namespace Microsoft.Scripting.Hosting.Shell {
     }
 
 }
-#endif
