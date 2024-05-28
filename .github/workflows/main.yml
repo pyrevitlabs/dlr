@@ -22,13 +22,11 @@ jobs:
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
-    - uses: actions/upload-artifact@v2
-      with:
-        name: packages
-        path: Package/Release/Packages
     - name: Test (net48)
       run: ./make.ps1 -frameworks net48 test-all
       shell: pwsh
     - name: Test (net6.0)
       run: ./make.ps1 -frameworks net6.0 test-all
       shell: pwsh
+    - name: Push
+      run: dotnet nuget push Package\Release\Packages\*.nupkg --source https://nuget.pkg.github.com/pyrevitlabs/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
