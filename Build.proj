@@ -20,7 +20,7 @@
     <PackageVersion Condition="'$(ReleaseLevel)' != 'final' or '$(ReleaseSerial)' != '0'">$(MajorVersion).$(MinorVersion).$(MicroVersion)-$(ReleaseLevel)$(ReleaseSerial)</PackageVersion>
 
     <StageDir>$(RootDir)\Package\$(Configuration)\Stage\DynamicLanguageRuntime.$(PackageVersion)</StageDir>
-    <PackageDir>$(RootDir)\Package\$(Configuration)\Packages\DynamicLanguageRuntime.$(PackageVersion)</PackageDir>
+    <PackageDir>$(RootDir)\Package\$(Configuration)\Packages</PackageDir>
   </PropertyGroup>
 
   <PropertyGroup>
