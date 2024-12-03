@@ -75,7 +75,7 @@
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)" SourceFiles="@(InfoFiles)" />
     <ItemGroup>
-      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\Microsoft.Scripting.*;$(BinDir)\$(Configuration)\**\pyRevitLabs.Microsoft.Dynamic.*" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*" />
+      <AssemblyFiles Include="$(BinDir)\$(Configuration)\**\*.dll;$(BinDir)\$(Configuration)\**\*.pdb" Exclude="$(BinDir)\$(Configuration)\**\Microsoft.*.Test.*" />
     </ItemGroup>
     <Copy DestinationFolder="$(StageDir)\%(RecursiveDir)" SourceFiles="@(AssemblyFiles)" />
   </Target>
