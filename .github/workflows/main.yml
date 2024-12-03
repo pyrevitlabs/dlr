@@ -13,16 +13,26 @@ jobs:
         os: [windows-latest]
 
     steps:
+<<<<<<< HEAD
     - uses: actions/checkout@v4
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v3
+=======
+    - uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+>>>>>>> parent of dcb1f34 (Update main.yml)
       with:
         dotnet-version: '6.0.x'
     - name: Build
       run: pwsh make.ps1
     - name: Package
       run: pwsh make.ps1 package
+<<<<<<< HEAD
     - uses: actions/upload-artifact@v4
+=======
+    - uses: actions/upload-artifact@v2
+>>>>>>> parent of dcb1f34 (Update main.yml)
       with:
         name: packages
         path: Package/Release/Packages
