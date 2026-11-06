@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 using Microsoft.Scripting.Utils;
@@ -84,6 +85,7 @@ namespace Microsoft.Scripting.Interpreter {
         [SpecialName, MethodImpl(MethodImplOptions.NoInlining)]
         public void Run(InterpretedFrame frame) {
             while (true) {
+                Exception pending;
                 try {
                     var instructions = Instructions.Instructions;
                     int index = frame.InstructionIndex;
@@ -93,16 +95,32 @@ namespace Microsoft.Scripting.Interpreter {
                     }
                     return;
                 } catch (Exception exception) {
-                    switch (HandleException(frame, exception)) {
-                        case ExceptionHandlingResult.Rethrow: throw;
+                    pending = exception;
+                    switch (HandleException(frame, ref pending)) {
+                        case ExceptionHandlingResult.Rethrow: break;
                         case ExceptionHandlingResult.Continue: continue;
                         case ExceptionHandlingResult.Return: return;
                     }
                 }
+                RethrowOutsideCatch(pending);
             }
         }
 
-        private ExceptionHandlingResult HandleException(InterpretedFrame frame, Exception exception) {
+        /// <summary>
+        /// Rethrows an exception after the catch block that caught it has exited.
+        /// </summary>
+        /// <remarks>
+        /// A rethrow from inside a catch block starts a nested exception dispatch on top of
+        /// the frames that are still being unwound, so every interpreted frame an exception
+        /// crosses would keep several KB of stack alive until the exception is finally caught.
+        /// Rethrowing once the catch has exited frees that stack first, so the cost of
+        /// unwinding no longer grows with the call depth.
+        /// </remarks>
+        private static void RethrowOutsideCatch(Exception exception) {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+        }
+
+        private ExceptionHandlingResult HandleException(InterpretedFrame frame, ref Exception exception) {
             frame.SaveTraceToException(exception);
             frame.InstructionIndex += GotoHandler(frame, exception, out ExceptionHandler handler);
 
@@ -147,8 +165,11 @@ namespace Microsoft.Scripting.Interpreter {
 
                     return ExceptionHandlingResult.Return;
                 } catch (Exception nestedException) {
-                    switch (HandleException(frame, nestedException)) {
-                        case ExceptionHandlingResult.Rethrow: throw;
+                    var pending = nestedException;
+                    switch (HandleException(frame, ref pending)) {
+                        case ExceptionHandlingResult.Rethrow:
+                            exception = pending;
+                            return ExceptionHandlingResult.Rethrow;
                         case ExceptionHandlingResult.Continue: continue;
                         case ExceptionHandlingResult.Return: return ExceptionHandlingResult.Return;
                         default: throw Assert.Unreachable;
